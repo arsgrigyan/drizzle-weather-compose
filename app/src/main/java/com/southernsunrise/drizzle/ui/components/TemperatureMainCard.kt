@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -122,13 +123,13 @@ private fun WeatherIconAndDegrees(
         horizontalArrangement = Arrangement.Center
     ) {
         Spacer(modifier = Modifier.weight(1f))
-        Image(
+        Icon(
             modifier = Modifier
                 .weight(5 / 2f)
                 .aspectRatio(1f),
             painter = painterResource(id = weatherData.weatherMedia.weatherIcon),
-            contentScale = ContentScale.Fit,
             contentDescription = "Weather icon",
+            tint = Color.White.copy(0.9f)
         )
         Spacer(modifier = Modifier.weight(1 / 2f))
         AutoResizeableText(

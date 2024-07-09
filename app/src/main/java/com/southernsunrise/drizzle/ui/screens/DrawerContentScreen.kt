@@ -1,5 +1,6 @@
 package com.southernsunrise.drizzle.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -70,7 +72,7 @@ import kotlinx.coroutines.launch
 fun DrawerContentScreen(
     modifier: Modifier = Modifier,
     geolocationsList: SnapshotStateList<LocationFullWeatherModel>,
-    currentlySelectedLocationIndex: MutableState<Int> = mutableStateOf(0),
+    currentlySelectedLocationIndex: MutableState<Int> = mutableIntStateOf(0),
     background: Brush = verticalGradientClearSkyDay,
     onNewLocationSelected: (locationName: String) -> Unit,
     searchBarState: SearchBarState,
@@ -289,6 +291,7 @@ fun DrawerContentScreen(
                         bgTint = Color.Transparent
                         contentTint = Color.White.copy(0.6f)
                     }
+
                     DrawerLocationItem(
                         modifier = Modifier
                             .fillMaxWidth()

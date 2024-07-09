@@ -1,5 +1,6 @@
 package com.southernsunrise.drizzle.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -78,7 +81,7 @@ fun DrawerLocationItem(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                    painter = painterResource(R.drawable.ic_weather_rainy),
+                    painter = painterResource(id = locationFullWeatherModel.weatherModel.currentWeatherDataModel.weatherMedia.weatherIcon),
                     contentDescription = null,
                     tint = iconTint
                 )
@@ -105,19 +108,3 @@ fun DrawerLocationItem(
     }
 }
 
-/*
-@Preview
-@Composable
-fun DrawerLocationItemPreview() {
-    DrawerLocationItem(
-        modifier = Modifier
-            .width(300.dp)
-            .height(70.dp)
-            .padding(15.dp),
-        LocationListItemModel("Ottawaagagzgva", R.drawable.ic_weather_rainy, 19.23f),
-        textColor = Color.White,
-        iconTint = Color.White,
-        backgroundTint = Color.Magenta,
-        backgroundCornerRadius = 20.dp,
-    )
-}*/
