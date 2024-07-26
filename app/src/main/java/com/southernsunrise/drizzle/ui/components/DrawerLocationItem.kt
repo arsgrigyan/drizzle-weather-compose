@@ -30,13 +30,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.southernsunrise.drizzle.R
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.LocationFullWeatherModel
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.LocationFullWeatherModel
 import com.southernsunrise.drizzle.ui.theme.gothamFontFamily
+import com.southernsunrise.drizzle.utils.Constants.getWeatherMedia
 
 @Composable
 fun DrawerLocationItem(
     modifier: Modifier = Modifier,
-    locationFullWeatherModel: LocationFullWeatherModel,
+    locationFullWeatherModel: com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.LocationFullWeatherModel,
     textFontSize: TextUnit = 26.sp,
     textColor: Color,
     iconTint: Color,
@@ -62,7 +63,7 @@ fun DrawerLocationItem(
         ) {
             Text(
                 modifier = Modifier.weight(2f),
-                text = locationFullWeatherModel.resolvedAddress,
+                text = locationFullWeatherModel.address,
                 fontFamily = gothamFontFamily,
                 fontWeight = FontWeight.Medium,
                 fontSize = textFontSize,
@@ -81,7 +82,7 @@ fun DrawerLocationItem(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                    painter = painterResource(id = locationFullWeatherModel.weatherModel.currentWeatherDataModel.weatherMedia.weatherIcon),
+                    painter = painterResource(id = getWeatherMedia(locationFullWeatherModel.weatherModel.currentWeatherDataModel.weatherMediaId).weatherIcon),
                     contentDescription = null,
                     tint = iconTint
                 )

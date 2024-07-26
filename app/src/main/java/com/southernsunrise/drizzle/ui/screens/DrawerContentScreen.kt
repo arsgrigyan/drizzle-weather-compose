@@ -52,8 +52,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.southernsunrise.drizzle.R
-import com.southernsunrise.drizzle.network.models.geocodingModel.GeolocationResponseModelItem
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.LocationFullWeatherModel
+import com.southernsunrise.drizzle.data.remote.models.geocodingModel.GeolocationResponseModelItem
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.LocationFullWeatherModel
 import com.southernsunrise.drizzle.ui.components.AutoResizeableText
 import com.southernsunrise.drizzle.ui.components.CorneredRectangleTextButton
 import com.southernsunrise.drizzle.ui.components.DrawerLocationItem
@@ -71,9 +71,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun DrawerContentScreen(
     modifier: Modifier = Modifier,
-    geolocationsList: SnapshotStateList<LocationFullWeatherModel>,
+    locationsList: SnapshotStateList<LocationFullWeatherModel>?,
     currentlySelectedLocationIndex: MutableState<Int> = mutableIntStateOf(0),
     background: Brush = verticalGradientClearSkyDay,
+    onExistingLocationSelected: (locationName: String) -> Unit,
     onNewLocationSelected: (locationName: String) -> Unit,
     searchBarState: SearchBarState,
     geolocationSearchState: GeolocationSearchState,
@@ -195,50 +196,53 @@ fun DrawerContentScreen(
                 MutableInteractionSource()
             }
         ) {
-            if (geolocationSearchState.geolocationResponseData.value.isEmpty() && !geolocationSearchState.isGeolocationLoading.value) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "Find new locations",
-                        color = Color.Black.copy(0.6f)
-                    )
-                }
-            } else if (geolocationSearchState.isGeolocationLoading.value) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = darkProgressBarColor)
-                }
-            } else if (!geolocationSearchState.errorMessage.value.isNullOrEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = geolocationSearchState.errorMessage.value.toString(),
-                        color = Color.Black.copy(0.6f)
-                    )
-                }
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(5.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start,
-                ) {
-                    geolocationSearchState.geolocationResponseData.value.forEach { item: GeolocationResponseModelItem ->
-                        val itemFullName =
-                            item.let { "${it.name}, ${if (it.state != null) it.state + ',' else ""} ${it.country}" }
+
+
+            if (!geolocationSearchState.isGeolocationLoading.value) {
+                if (geolocationSearchState.geolocationResponseData.value.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(5.dp),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        geolocationSearchState.geolocationResponseData.value.forEach { item: GeolocationResponseModelItem ->
+                            val itemFullName =
+                                item.let { "${it.name}, ${if (it.state != null) it.state + ',' else ""} ${it.country}" }
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 5.dp, top = 5.dp)
+                                    .clickable {
+                                        onNewLocationSelected(itemFullName)
+                                    },
+                                text = itemFullName,
+                                color = Color.Black.copy(0.6f)
+                            )
+                        }
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 5.dp, top = 5.dp)
-                                .clickable {
-                                    onNewLocationSelected(itemFullName)
-                                },
-                            text = itemFullName,
-                            color = Color.Black.copy(0.6f)
+                            text = if (searchQuery.value.isBlank()) {
+                                "Find new locations"
+                            } else if (geolocationSearchState.errorMessage.value.isNullOrEmpty()) {
+                                "Something went wrong"
+                            } else geolocationSearchState.errorMessage.value ?: "",
+                            color = Color.Black.copy(0.6f),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
 
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = darkProgressBarColor)
+                }
             }
+
         }
 
         Spacer(
@@ -247,97 +251,95 @@ fun DrawerContentScreen(
                 .height(10.dp)
         )
 
-        if (geolocationsList.isNotEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Row(
+            if (!locationsList.isNullOrEmpty()) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(10f), verticalAlignment = Alignment.Bottom
+                        .fillMaxWidth(0.9f)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(15.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .aspectRatio(1f),
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_location),
-                        contentDescription = "location icon",
-                        tint = Color.White.copy(0.8f)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    AutoResizeableText(
-                        modifier = Modifier.fillMaxWidth(0.8f),
-                        text = "Recent Locations",
-                        defaultFontSize = 22.sp,
-                        color = Color.White.copy(0.6f),
-                        fontWeight = FontWeight.Bold,
-                        minFontSize = 16.sp,
-                        textAlign = TextAlign.Start
-                    )
-                }
 
-                geolocationsList.forEachIndexed { index: Int, element: LocationFullWeatherModel ->
-                    val bgTint: Color
-                    val contentTint: Color
-                    if (index == currentlySelectedLocationIndex.value) {
-                        bgTint = Color.White.copy(0.2f)
-                        contentTint = Color.White.copy(0.7f)
-                    } else {
-                        bgTint = Color.Transparent
-                        contentTint = Color.White.copy(0.6f)
-                    }
-
-                    DrawerLocationItem(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(9 / 2f)
-                            .padding(10.dp),
-                        locationFullWeatherModel = element,
-                        textFontSize = 22.sp,
-                        textColor = contentTint,
-                        iconTint = contentTint,
-                        backgroundTint = bgTint,
-                        backgroundCornerRadius = 20.dp,
-                        onClick = {
-                            scope.launch {
-                                onNewLocationSelected(element.resolvedAddress)
-                            }
+                            .aspectRatio(10f), verticalAlignment = Alignment.Bottom
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .aspectRatio(1f),
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_location),
+                            contentDescription = "location icon",
+                            tint = Color.White.copy(0.8f)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        AutoResizeableText(
+                            modifier = Modifier.fillMaxWidth(0.8f),
+                            text = "Recent Locations",
+                            defaultFontSize = 22.sp,
+                            color = Color.White.copy(0.6f),
+                            fontWeight = FontWeight.Bold,
+                            minFontSize = 16.sp,
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    locationsList.forEachIndexed { index: Int, element: LocationFullWeatherModel ->
+                        val bgTint: Color
+                        val contentTint: Color
+                        if (index == currentlySelectedLocationIndex.value) {
+                            bgTint = Color.White.copy(0.2f)
+                            contentTint = Color.White.copy(0.7f)
+                        } else {
+                            bgTint = Color.Transparent
+                            contentTint = Color.White.copy(0.6f)
                         }
+
+                        DrawerLocationItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(9 / 2f)
+                                .padding(10.dp),
+                            locationFullWeatherModel = element,
+                            textFontSize = 22.sp,
+                            textColor = contentTint,
+                            iconTint = contentTint,
+                            backgroundTint = bgTint,
+                            backgroundCornerRadius = 20.dp,
+                            onClick = {
+                                scope.launch {
+                                    onExistingLocationSelected(element.address)
+                                }
+                            }
+                        )
+                    }
+
+                    CorneredRectangleTextButton(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .aspectRatio(5.5f)
+                            .align(Alignment.CenterHorizontally),
+                        backgroundTint = Color.White.copy(0.15f),
+                        textColor = Color.White.copy(0.6f),
+                        textFontSize = 18.sp,
+                        cornerRadius = 25.dp
+                    )
+
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp)
                     )
                 }
-
-                CorneredRectangleTextButton(
-                    modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .aspectRatio(5.5f)
-                        .align(Alignment.CenterHorizontally),
-                    backgroundTint = Color.White.copy(0.15f),
-                    textColor = Color.White.copy(0.6f),
-                    textFontSize = 18.sp,
-                    cornerRadius = 25.dp
-                )
-
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(10.dp)
-                )
+            } else Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Recent searches will appear here.", color = Color.White.copy(0.8f))
             }
-        } else Box(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Recent searches will appear here.", color = Color.White.copy(0.8f))
-        }
-
-
     }
 
 }
