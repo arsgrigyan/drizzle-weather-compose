@@ -26,11 +26,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.CurrentWeatherDataModel
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.CurrentWeatherDataModel
 import com.southernsunrise.drizzle.ui.theme.gothamFontFamily
 import com.southernsunrise.drizzle.ui.theme.lightModePrimaryTextColor
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardBackgroundColorLight
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusDefault
+import com.southernsunrise.drizzle.utils.Constants.getWeatherMedia
 import com.southernsunrise.drizzle.utils.updatedAgo
 
 
@@ -114,7 +115,7 @@ private fun DateText(modifier: Modifier = Modifier, dateText: String) {
 @Composable
 private fun WeatherIconAndDegrees(
     modifier: Modifier = Modifier,
-    weatherData: CurrentWeatherDataModel
+    weatherData:CurrentWeatherDataModel
 ) {
 
     Row(
@@ -127,7 +128,7 @@ private fun WeatherIconAndDegrees(
             modifier = Modifier
                 .weight(5 / 2f)
                 .aspectRatio(1f),
-            painter = painterResource(id = weatherData.weatherMedia.weatherIcon),
+            painter = painterResource(id = getWeatherMedia(weatherData.weatherMediaId).weatherIcon),
             contentDescription = "Weather icon",
             tint = Color.White.copy(0.9f)
         )
@@ -152,7 +153,7 @@ private fun WeatherIconAndDegrees(
 @Composable
 private fun MaxMinFeelsLikeAndWeatherDescription(
     modifier: Modifier = Modifier,
-    weatherData: CurrentWeatherDataModel
+    weatherData:CurrentWeatherDataModel
 ) {
     Column(
         modifier = modifier,

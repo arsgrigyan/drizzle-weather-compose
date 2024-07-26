@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.southernsunrise.drizzle.R
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.AtmosphericPropertiesModel
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.AtmosphericPropertiesModel
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardBackgroundColorLight
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusDefault
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusSmall
@@ -22,7 +22,7 @@ import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusSmall
 @Composable
 fun AtmosphericPropertiesCard(
     modifier: Modifier = Modifier,
-    atmosphericPropertiesModel: AtmosphericPropertiesModel,
+    atmosphericPropertiesModel: com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.AtmosphericPropertiesModel,
     cardCornerRadius: Dp = weatherInfoCardsCornerRadiusDefault,
     cardBackgroundColor: Color = weatherInfoCardBackgroundColorLight
 ) {

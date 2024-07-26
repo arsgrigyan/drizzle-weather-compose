@@ -44,7 +44,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.google.android.gms.location.LocationServices
 import com.southernsunrise.drizzle.R
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.LocationFullWeatherModel
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.LocationFullWeatherModel
 import com.southernsunrise.drizzle.ui.components.AtmosphericPropertiesCard
 import com.southernsunrise.drizzle.ui.components.AutoResizeableText
 import com.southernsunrise.drizzle.ui.components.DailyForecastCard
@@ -76,7 +76,8 @@ fun HomeScreen(
     isWeatherDataLoading: MutableState<Boolean>,
     context: Context,
     onDrawerStateChange: (activateSearchBar: Boolean) -> Unit,
-    onUserLocationAccessed: (lat: Double, lon: Double) -> Unit
+    onUserLocationAccessed: (lat: Double, lon: Double) -> Unit,
+    showGetStartedView: Boolean
 ) {
 
     // Create a permission launcher
@@ -129,7 +130,7 @@ fun HomeScreen(
 
                     AutoResizeableText(
                         modifier = Modifier.weight(4f),
-                        text = locationWeatherData?.resolvedAddress ?: "",
+                        text = locationWeatherData?.address ?: "",
                         defaultFontSize = appBarMaxTitleFontSize,
                         color = lightModePrimaryTextColor,
                         fontWeight = FontWeight.Normal,
@@ -357,7 +358,8 @@ fun HomeScreen(
                     }
 
                 }
-            } ?: Box(
+            }
+            if (showGetStartedView) Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = innerPadding.calculateTopPadding()),

@@ -1,7 +1,7 @@
 package com.southernsunrise.drizzle.utils
 
 import com.southernsunrise.drizzle.R
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.WeatherMedia
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.WeatherMedia
 import com.southernsunrise.drizzle.ui.theme.verticalGradientClearSkyDay
 import com.southernsunrise.drizzle.ui.theme.verticalGradientClearSkyNight
 import com.southernsunrise.drizzle.ui.theme.verticalGradientCloudyDay
@@ -16,7 +16,7 @@ object Constants {
     const val VISUAL_CROSSING_URL = "https://www.visualcrossing.com/"
     const val MY_GITHUB_PAGE_URL = "https://github.com/arsgrigyan"
 
-    private val weatherMediaMap = hashMapOf<String, WeatherMedia>(
+    private val weatherMediaMap = hashMapOf(
         "snow" to WeatherMedia(
             appBackground = verticalGradientWindSnowSleetHail,
             weatherIcon = R.drawable.ic_snow
@@ -83,7 +83,7 @@ object Constants {
         ),
     )
 
-    fun getWeatherMedia(code:String):WeatherMedia{
+    fun getWeatherMedia(code: String): WeatherMedia {
         return weatherMediaMap[code]!!
     }
 }

@@ -22,11 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.HourlyWeatherDataModel
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.HourlyWeatherDataModel
 import com.southernsunrise.drizzle.ui.theme.listOverlayHorizontalGradient
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardBackgroundColorLight
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusDefault
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusSmall
+import com.southernsunrise.drizzle.utils.Constants.getWeatherMedia
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
@@ -36,7 +37,7 @@ fun HourlyForecastCard(
     cardBackgroundColor: Color = weatherInfoCardBackgroundColorLight,
     cardCornerRadius: Dp = weatherInfoCardsCornerRadiusDefault,
     todayHoursList: List<HourlyWeatherDataModel>,
-    tomorrowHoursList: List<HourlyWeatherDataModel>,
+    tomorrowHoursList: List<com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.HourlyWeatherDataModel>,
 ) {
     val horizontalScrollState = rememberScrollState()
     CompositionLocalProvider(
@@ -68,7 +69,7 @@ fun HourlyForecastCard(
                         modifier = Modifier
                             .fillMaxHeight()
                             .aspectRatio(3 / 4f),
-                        iconResource = hour.weatherMedia.weatherIcon,
+                        iconResource = getWeatherMedia(hour.weatherMediaId).weatherIcon,
                         temperature = hour.temperaturePropertiesModel.tempAverage.toInt(),
                         timeString = if (todayHoursList.indexOf(hour) == 0) "Now" else hour.dateTime
                     )
@@ -78,7 +79,7 @@ fun HourlyForecastCard(
                         modifier = Modifier
                             .fillMaxHeight()
                             .aspectRatio(3 / 4f),
-                        iconResource = tomorrowHoursList[i].weatherMedia.weatherIcon,
+                        iconResource = getWeatherMedia(tomorrowHoursList[i].weatherMediaId).weatherIcon ,
                         temperature = tomorrowHoursList[i].temperaturePropertiesModel.tempAverage.toInt(),
                         timeString = tomorrowHoursList[i].dateTime
                     )

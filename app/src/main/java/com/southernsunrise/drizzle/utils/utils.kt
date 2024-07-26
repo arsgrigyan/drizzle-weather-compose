@@ -2,6 +2,7 @@ package com.southernsunrise.drizzle.utils
 
 import android.content.Context
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.runtime.Composable
@@ -9,13 +10,15 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.HourlyWeatherDataModel
+import androidx.core.content.ContextCompat.getSystemService
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.HourlyWeatherDataModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 
+// --------- Screen
 @Composable
 fun getScreenDimensInDp(): Pair<Dp, Dp> {
     val configuration = LocalConfiguration.current
@@ -31,6 +34,7 @@ fun getScreenHeightFraction(fraction: Float): Dp {
 }
 
 
+// --------- Date
 fun clipSeconds(time: String): String {
     // Ensure the input string is in the expected format "HH:mm:ss"
     if (time.length != 8 || time[2] != ':' || time[5] != ':') {
@@ -79,7 +83,7 @@ fun extractHourStringFromTimeString(time: String): String {
     return time.substring(0, 2)
 }
 
-fun List<HourlyWeatherDataModel>.sliceFromCurrentHour(hourString: String): List<HourlyWeatherDataModel> {
+fun List<com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.HourlyWeatherDataModel>.sliceFromCurrentHour(hourString: String): List<com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.HourlyWeatherDataModel> {
     var currentHourIndex = 0
     for (i in this.indices) {
         if (extractHourStringFromTimeString(this[i].dateTime) == hourString) {
@@ -88,7 +92,7 @@ fun List<HourlyWeatherDataModel>.sliceFromCurrentHour(hourString: String): List<
         }
     }
 
-    val newHourlyModelsList = mutableListOf<HourlyWeatherDataModel>()
+    val newHourlyModelsList = mutableListOf<com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.HourlyWeatherDataModel>()
 
     return if (currentHourIndex != 0) {
         for (i in currentHourIndex..<this.size) {
@@ -118,6 +122,8 @@ fun String.formatAsWeekMonthDate(): String {
     return outputDateStr
 }
 
+
+// --------- Permissions
 fun locationServicesEnabled(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         // This is a new method provided in API 28
@@ -133,6 +139,16 @@ fun locationServicesEnabled(context: Context): Boolean {
     }
 }
 
+// --------- Uncategorized
+
+
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    val networkInfo = connectivityManager.activeNetworkInfo
+    return networkInfo != null && networkInfo.isConnected
+}
 
 @Composable
 fun openURL(url: String) {

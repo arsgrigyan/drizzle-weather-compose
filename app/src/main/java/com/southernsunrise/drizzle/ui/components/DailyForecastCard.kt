@@ -22,16 +22,17 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.southernsunrise.drizzle.network.models.representationWeatherModel.DailyWeatherDataModel
+import com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.DailyWeatherDataModel
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusDefault
 import com.southernsunrise.drizzle.ui.theme.weatherInfoCardsCornerRadiusSmall
+import com.southernsunrise.drizzle.utils.Constants.getWeatherMedia
 import com.southernsunrise.drizzle.utils.formatAsWeekMonthDate
 
 
 @Composable
 fun DailyForecastCard(
     modifier: Modifier = Modifier,
-    days: List<DailyWeatherDataModel>,
+    days: List<com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.DailyWeatherDataModel>,
     cardBackgroundColor: Color,
     cardCornerRadius: Dp = weatherInfoCardsCornerRadiusDefault,
     tint: Color
@@ -41,7 +42,7 @@ fun DailyForecastCard(
         verticalArrangement = Arrangement.spacedBy(3.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        days.forEachIndexed { index: Int, day: DailyWeatherDataModel ->
+        days.forEachIndexed { index: Int, day: com.southernsunrise.drizzle.data.remote.models.representationWeatherModel.DailyWeatherDataModel ->
             val cardTopStartCorner = if (index == 0) weatherInfoCardsCornerRadiusSmall else 0.dp
             val cardTopEndCorner = if (index == 0) cardCornerRadius else 0.dp
 
@@ -83,7 +84,7 @@ fun DailyForecastCard(
                             .fillMaxHeight()
                             .aspectRatio(1f)
                             .padding(5.dp),
-                        imageVector = ImageVector.vectorResource(day.weatherMedia.weatherIcon),
+                        imageVector = ImageVector.vectorResource(getWeatherMedia(day.weatherMediaId).weatherIcon),
                         contentDescription = "Weather icon",
                         tint = tint
                     )
